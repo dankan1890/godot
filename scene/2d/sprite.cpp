@@ -222,6 +222,7 @@ void Sprite::set_region(bool p_region) {
 
 	region = p_region;
 	update();
+	_change_notify();
 }
 
 bool Sprite::is_region() const {
@@ -395,6 +396,10 @@ void Sprite::_validate_property(PropertyInfo &property) const {
 
 	if (property.name == "frame_coords") {
 		property.usage |= PROPERTY_USAGE_KEYING_INCREMENTS;
+	}
+
+	if (!region && (property.name == "region_rect" || property.name == "region_filter_clip")) {
+		property.usage = 0;
 	}
 }
 
