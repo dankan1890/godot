@@ -62,6 +62,12 @@ private:
 	Rect2 _position_rect;
 	bool _tile;
 
+	Color normal_modulate;
+	Color pressed_modulate;
+	Color hover_modulate;
+	Color disabled_modulate;
+	Color focused_modulate;
+
 protected:
 	virtual Size2 get_minimum_size() const;
 	virtual bool has_point(const Point2 &p_point) const;
@@ -88,6 +94,17 @@ public:
 
 	void set_stretch_mode(StretchMode p_stretch_mode);
 	StretchMode get_stretch_mode() const;
+
+	void set_normal_texture_modulate(Color p_modulate);
+	Color get_normal_texture_modulate();
+	void set_pressed_texture_modulate(Color p_modulate);
+	Color get_pressed_texture_modulate();
+	void set_hover_texture_modulate(Color p_modulate);
+	Color get_hover_texture_modulate();
+	void set_disabled_texture_modulate(Color p_modulate);
+	Color get_disabled_texture_modulate();
+	void set_focused_texture_modulate(Color p_modulate);
+	Color get_focused_texture_modulate();
 
 	TextureButton();
 };

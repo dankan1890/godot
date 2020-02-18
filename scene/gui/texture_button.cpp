@@ -123,43 +123,61 @@ void TextureButton::_notification(int p_what) {
 			DrawMode draw_mode = get_draw_mode();
 
 			Ref<Texture> texdraw;
+			Color texmodulate = Color(1, 1, 1);
 
 			switch (draw_mode) {
 				case DRAW_NORMAL: {
 
-					if (normal.is_valid())
+					if (normal.is_valid()) {
 						texdraw = normal;
+						texmodulate = normal_modulate;
+					}
 				} break;
 				case DRAW_HOVER_PRESSED:
 				case DRAW_PRESSED: {
 
 					if (pressed.is_null()) {
 						if (hover.is_null()) {
-							if (normal.is_valid())
+							if (normal.is_valid()) {
 								texdraw = normal;
-						} else
+								texmodulate = normal_modulate;
+							}
+						} else {
 							texdraw = hover;
+							texmodulate = hover_modulate;
+						}
 
-					} else
+					} else {
 						texdraw = pressed;
+						texmodulate = pressed_modulate;
+					}
 				} break;
 				case DRAW_HOVER: {
 
 					if (hover.is_null()) {
-						if (pressed.is_valid() && is_pressed())
+						if (pressed.is_valid() && is_pressed()) {
 							texdraw = pressed;
-						else if (normal.is_valid())
+							texmodulate = pressed_modulate;
+						} else if (normal.is_valid()) {
 							texdraw = normal;
-					} else
+							texmodulate = normal_modulate;
+						}
+					} else {
 						texdraw = hover;
+						texmodulate = hover_modulate;
+					}
 				} break;
 				case DRAW_DISABLED: {
 
 					if (disabled.is_null()) {
-						if (normal.is_valid())
+						if (normal.is_valid()) {
 							texdraw = normal;
-					} else
+							texmodulate = normal_modulate;
+						}
+					} else {
 						texdraw = disabled;
+						texmodulate = disabled_modulate;
+					}
 				} break;
 			}
 
@@ -216,16 +234,16 @@ void TextureButton::_notification(int p_what) {
 
 				_position_rect = Rect2(ofs, size);
 				if (_tile) {
-					draw_texture_rect(texdraw, _position_rect, _tile);
+					draw_texture_rect(texdraw, _position_rect, _tile, texmodulate);
 				} else {
-					draw_texture_rect_region(texdraw, _position_rect, _texture_region);
+					draw_texture_rect_region(texdraw, _position_rect, _texture_region, texmodulate);
 				}
 			} else {
 				_position_rect = Rect2();
 			}
 
 			if (has_focus() && focused.is_valid()) {
-				draw_texture_rect(focused, _position_rect, false);
+				draw_texture_rect(focused, _position_rect, false, texmodulate);
 			};
 		} break;
 	}
@@ -251,12 +269,34 @@ void TextureButton::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_expand"), &TextureButton::get_expand);
 	ClassDB::bind_method(D_METHOD("get_stretch_mode"), &TextureButton::get_stretch_mode);
 
+	ClassDB::bind_method(D_METHOD("set_normal_texture_modulate", "p_modulate"), &TextureButton::set_normal_texture_modulate);
+	ClassDB::bind_method(D_METHOD("get_normal_texture_modulate"), &TextureButton::get_normal_texture_modulate);
+	ClassDB::bind_method(D_METHOD("set_pressed_texture_modulate", "p_modulate"), &TextureButton::set_pressed_texture_modulate);
+	ClassDB::bind_method(D_METHOD("get_pressed_texture_modulate"), &TextureButton::get_pressed_texture_modulate);
+	ClassDB::bind_method(D_METHOD("set_hover_texture_modulate", "p_modulate"), &TextureButton::set_hover_texture_modulate);
+	ClassDB::bind_method(D_METHOD("get_hover_texture_modulate"), &TextureButton::get_hover_texture_modulate);
+	ClassDB::bind_method(D_METHOD("set_disabled_texture_modulate", "p_modulate"), &TextureButton::set_disabled_texture_modulate);
+	ClassDB::bind_method(D_METHOD("get_disabled_texture_modulate"), &TextureButton::get_disabled_texture_modulate);
+	ClassDB::bind_method(D_METHOD("set_focused_texture_modulate", "p_modulate"), &TextureButton::set_focused_texture_modulate);
+	ClassDB::bind_method(D_METHOD("get_focused_texture_modulate"), &TextureButton::get_focused_texture_modulate);
+
+
 	ADD_GROUP("Textures", "texture_");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "texture_normal", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_normal_texture", "get_normal_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "texture_normal_modulate"), "set_normal_texture_modulate", "get_normal_texture_modulate");
+
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "texture_pressed", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_pressed_texture", "get_pressed_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "texture_pressed_modulate"), "set_pressed_texture_modulate", "get_pressed_texture_modulate");
+
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "texture_hover", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_hover_texture", "get_hover_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "texture_hover_modulate"), "set_hover_texture_modulate", "get_hover_texture_modulate");
+
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "texture_disabled", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_disabled_texture", "get_disabled_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "texture_disabled_modulate"), "set_disabled_texture_modulate", "get_disabled_texture_modulate");
+
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "texture_focused", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_focused_texture", "get_focused_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "texture_focused_modulate"), "set_focused_texture_modulate", "get_focused_texture_modulate");
+
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "texture_click_mask", PROPERTY_HINT_RESOURCE_TYPE, "BitMap"), "set_click_mask", "get_click_mask");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "expand", PROPERTY_HINT_RESOURCE_TYPE, "bool"), "set_expand", "get_expand");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "stretch_mode", PROPERTY_HINT_ENUM, "Scale,Tile,Keep,Keep Centered,Keep Aspect,Keep Aspect Centered,Keep Aspect Covered"), "set_stretch_mode", "get_stretch_mode");
@@ -348,9 +388,56 @@ TextureButton::StretchMode TextureButton::get_stretch_mode() const {
 	return stretch_mode;
 }
 
+void TextureButton::set_normal_texture_modulate(Color p_modulate) {
+	normal_modulate = p_modulate;
+	update();
+}
+
+void TextureButton::set_pressed_texture_modulate(Color p_modulate) {
+	pressed_modulate = p_modulate;
+	update();
+}
+
+void TextureButton::set_hover_texture_modulate(Color p_modulate) {
+	hover_modulate = p_modulate;
+	update();
+}
+
+void TextureButton::set_disabled_texture_modulate(Color p_modulate) {
+	disabled_modulate = p_modulate;
+	update();
+}
+
+void TextureButton::set_focused_texture_modulate(Color p_modulate) {
+	focused_modulate = p_modulate;
+	update();
+}
+
+Color TextureButton::get_normal_texture_modulate() {
+	return normal_modulate;
+}
+
+Color TextureButton::get_pressed_texture_modulate() {
+	return pressed_modulate;
+}
+
+Color TextureButton::get_hover_texture_modulate() {
+	return hover_modulate;
+}
+
+Color TextureButton::get_disabled_texture_modulate() {
+	return disabled_modulate;
+}
+
+Color TextureButton::get_focused_texture_modulate() {
+	return focused_modulate;
+}
+
 TextureButton::TextureButton() {
 	expand = false;
 	stretch_mode = STRETCH_SCALE;
+
+	normal_modulate = Color(1, 1, 1);
 
 	_texture_region = Rect2();
 	_position_rect = Rect2();
