@@ -437,7 +437,11 @@ TextureButton::TextureButton() {
 	stretch_mode = STRETCH_SCALE;
 
 	normal_modulate = Color(1, 1, 1);
-
+	pressed_modulate = Color(1, 1, 1);
+	hover_modulate = Color(1, 1, 1);
+	disabled_modulate = Color(1, 1, 1);
+	focused_modulate = Color(1, 1, 1);
+	
 	_texture_region = Rect2();
 	_position_rect = Rect2();
 	_tile = false;
