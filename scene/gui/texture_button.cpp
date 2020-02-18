@@ -280,7 +280,6 @@ void TextureButton::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_focused_texture_modulate", "p_modulate"), &TextureButton::set_focused_texture_modulate);
 	ClassDB::bind_method(D_METHOD("get_focused_texture_modulate"), &TextureButton::get_focused_texture_modulate);
 
-
 	ADD_GROUP("Textures", "texture_");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "texture_normal", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_normal_texture", "get_normal_texture");
 	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "texture_normal_modulate"), "set_normal_texture_modulate", "get_normal_texture_modulate");
