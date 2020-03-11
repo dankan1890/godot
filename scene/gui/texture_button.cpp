@@ -243,7 +243,7 @@ void TextureButton::_notification(int p_what) {
 			}
 
 			if (has_focus() && focused.is_valid()) {
-				draw_texture_rect(focused, _position_rect, false, texmodulate);
+				draw_texture_rect(focused, _position_rect, false, focused_modulate);
 			};
 		} break;
 	}
