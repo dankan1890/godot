@@ -49,11 +49,17 @@ public:
 	};
 
 private:
-	Ref<Texture> normal;
-	Ref<Texture> pressed;
-	Ref<Texture> hover;
-	Ref<Texture> disabled;
-	Ref<Texture> focused;
+	struct StructTexture {
+		Ref<Texture> texture;
+		Color modulate;
+	};
+
+	StructTexture normal;
+	StructTexture pressed;
+	StructTexture hover;
+	StructTexture disabled;
+	StructTexture focused;
+
 	Ref<BitMap> click_mask;
 	bool expand;
 	StretchMode stretch_mode;
@@ -61,12 +67,6 @@ private:
 	Rect2 _texture_region;
 	Rect2 _position_rect;
 	bool _tile;
-
-	Color normal_modulate;
-	Color pressed_modulate;
-	Color hover_modulate;
-	Color disabled_modulate;
-	Color focused_modulate;
 
 protected:
 	virtual Size2 get_minimum_size() const;

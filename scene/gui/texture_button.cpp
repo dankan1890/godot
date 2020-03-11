@@ -37,20 +37,20 @@ Size2 TextureButton::get_minimum_size() const {
 	Size2 rscale = Control::get_minimum_size();
 
 	if (!expand) {
-		if (normal.is_null()) {
-			if (pressed.is_null()) {
-				if (hover.is_null())
+		if (normal.texture.is_null()) {
+			if (pressed.texture.is_null()) {
+				if (hover.texture.is_null())
 					if (click_mask.is_null())
 						rscale = Size2();
 					else
 						rscale = click_mask->get_size();
 				else
-					rscale = hover->get_size();
+					rscale = hover.texture->get_size();
 			} else
-				rscale = pressed->get_size();
+				rscale = pressed.texture->get_size();
 
 		} else
-			rscale = normal->get_size();
+			rscale = normal.texture->get_size();
 	}
 
 	return rscale.abs();
@@ -122,74 +122,63 @@ void TextureButton::_notification(int p_what) {
 		case NOTIFICATION_DRAW: {
 			DrawMode draw_mode = get_draw_mode();
 
-			Ref<Texture> texdraw;
-			Color texmodulate = Color(1, 1, 1);
+			StructTexture texdraw;
 
 			switch (draw_mode) {
 				case DRAW_NORMAL: {
 
-					if (normal.is_valid()) {
+					if (normal.texture.is_valid())
 						texdraw = normal;
-						texmodulate = normal_modulate;
-					}
 				} break;
 				case DRAW_HOVER_PRESSED:
 				case DRAW_PRESSED: {
 
-					if (pressed.is_null()) {
-						if (hover.is_null()) {
-							if (normal.is_valid()) {
+					if (pressed.texture.is_null()) {
+						if (hover.texture.is_null()) {
+							if (normal.texture.is_valid()) {
 								texdraw = normal;
-								texmodulate = normal_modulate;
 							}
 						} else {
 							texdraw = hover;
-							texmodulate = hover_modulate;
 						}
 
 					} else {
 						texdraw = pressed;
-						texmodulate = pressed_modulate;
 					}
 				} break;
 				case DRAW_HOVER: {
 
-					if (hover.is_null()) {
-						if (pressed.is_valid() && is_pressed()) {
+					if (hover.texture.is_null()) {
+						if (pressed.texture.is_valid() && is_pressed()) {
 							texdraw = pressed;
-							texmodulate = pressed_modulate;
-						} else if (normal.is_valid()) {
+						} else if (normal.texture.is_valid()) {
 							texdraw = normal;
-							texmodulate = normal_modulate;
 						}
 					} else {
 						texdraw = hover;
-						texmodulate = hover_modulate;
 					}
 				} break;
 				case DRAW_DISABLED: {
 
-					if (disabled.is_null()) {
-						if (normal.is_valid()) {
+					if (disabled.texture.is_null()) {
+						if (normal.texture.is_valid()) {
 							texdraw = normal;
-							texmodulate = normal_modulate;
 						}
 					} else {
 						texdraw = disabled;
-						texmodulate = disabled_modulate;
 					}
 				} break;
 			}
 
-			if (texdraw.is_valid()) {
+			if (texdraw.texture.is_valid()) {
 				Point2 ofs;
-				Size2 size = texdraw->get_size();
-				_texture_region = Rect2(Point2(), texdraw->get_size());
+				Size2 size = texdraw.texture->get_size();
+				_texture_region = Rect2(Point2(), texdraw.texture->get_size());
 				_tile = false;
 				if (expand) {
 					switch (stretch_mode) {
 						case STRETCH_KEEP:
-							size = texdraw->get_size();
+							size = texdraw.texture->get_size();
 							break;
 						case STRETCH_SCALE:
 							size = get_size();
@@ -199,18 +188,18 @@ void TextureButton::_notification(int p_what) {
 							_tile = true;
 							break;
 						case STRETCH_KEEP_CENTERED:
-							ofs = (get_size() - texdraw->get_size()) / 2;
-							size = texdraw->get_size();
+							ofs = (get_size() - texdraw.texture->get_size()) / 2;
+							size = texdraw.texture->get_size();
 							break;
 						case STRETCH_KEEP_ASPECT_CENTERED:
 						case STRETCH_KEEP_ASPECT: {
 							Size2 _size = get_size();
-							float tex_width = texdraw->get_width() * _size.height / texdraw->get_height();
+							float tex_width = texdraw.texture->get_width() * _size.height / texdraw.texture->get_height();
 							float tex_height = _size.height;
 
 							if (tex_width > _size.width) {
 								tex_width = _size.width;
-								tex_height = texdraw->get_height() * tex_width / texdraw->get_width();
+								tex_height = texdraw.texture->get_height() * tex_width / texdraw.texture->get_width();
 							}
 
 							if (stretch_mode == STRETCH_KEEP_ASPECT_CENTERED) {
@@ -222,7 +211,7 @@ void TextureButton::_notification(int p_what) {
 						} break;
 						case STRETCH_KEEP_ASPECT_COVERED: {
 							size = get_size();
-							Size2 tex_size = texdraw->get_size();
+							Size2 tex_size = texdraw.texture->get_size();
 							Size2 scale_size(size.width / tex_size.width, size.height / tex_size.height);
 							float scale = scale_size.width > scale_size.height ? scale_size.width : scale_size.height;
 							Size2 scaled_tex_size = tex_size * scale;
@@ -234,16 +223,16 @@ void TextureButton::_notification(int p_what) {
 
 				_position_rect = Rect2(ofs, size);
 				if (_tile) {
-					draw_texture_rect(texdraw, _position_rect, _tile, texmodulate);
+					draw_texture_rect(texdraw.texture, _position_rect, _tile, texdraw.modulate);
 				} else {
-					draw_texture_rect_region(texdraw, _position_rect, _texture_region, texmodulate);
+					draw_texture_rect_region(texdraw.texture, _position_rect, _texture_region, texdraw.modulate);
 				}
 			} else {
 				_position_rect = Rect2();
 			}
 
-			if (has_focus() && focused.is_valid()) {
-				draw_texture_rect(focused, _position_rect, false, focused_modulate);
+			if (has_focus() && focused.texture.is_valid()) {
+				draw_texture_rect(focused.texture, _position_rect, false, focused.modulate);
 			};
 		} break;
 	}
@@ -311,24 +300,24 @@ void TextureButton::_bind_methods() {
 
 void TextureButton::set_normal_texture(const Ref<Texture> &p_normal) {
 
-	normal = p_normal;
+	normal.texture = p_normal;
 	update();
 	minimum_size_changed();
 }
 
 void TextureButton::set_pressed_texture(const Ref<Texture> &p_pressed) {
 
-	pressed = p_pressed;
+	pressed.texture = p_pressed;
 	update();
 }
 void TextureButton::set_hover_texture(const Ref<Texture> &p_hover) {
 
-	hover = p_hover;
+	hover.texture = p_hover;
 	update();
 }
 void TextureButton::set_disabled_texture(const Ref<Texture> &p_disabled) {
 
-	disabled = p_disabled;
+	disabled.texture = p_disabled;
 	update();
 }
 void TextureButton::set_click_mask(const Ref<BitMap> &p_click_mask) {
@@ -339,19 +328,19 @@ void TextureButton::set_click_mask(const Ref<BitMap> &p_click_mask) {
 
 Ref<Texture> TextureButton::get_normal_texture() const {
 
-	return normal;
+	return normal.texture;
 }
 Ref<Texture> TextureButton::get_pressed_texture() const {
 
-	return pressed;
+	return pressed.texture;
 }
 Ref<Texture> TextureButton::get_hover_texture() const {
 
-	return hover;
+	return hover.texture;
 }
 Ref<Texture> TextureButton::get_disabled_texture() const {
 
-	return disabled;
+	return disabled.texture;
 }
 Ref<BitMap> TextureButton::get_click_mask() const {
 
@@ -360,12 +349,12 @@ Ref<BitMap> TextureButton::get_click_mask() const {
 
 Ref<Texture> TextureButton::get_focused_texture() const {
 
-	return focused;
+	return focused.texture;
 };
 
 void TextureButton::set_focused_texture(const Ref<Texture> &p_focused) {
 
-	focused = p_focused;
+	focused.texture = p_focused;
 };
 
 bool TextureButton::get_expand() const {
@@ -388,60 +377,60 @@ TextureButton::StretchMode TextureButton::get_stretch_mode() const {
 }
 
 void TextureButton::set_normal_texture_modulate(Color p_modulate) {
-	normal_modulate = p_modulate;
+	normal.modulate = p_modulate;
 	update();
 }
 
 void TextureButton::set_pressed_texture_modulate(Color p_modulate) {
-	pressed_modulate = p_modulate;
+	pressed.modulate = p_modulate;
 	update();
 }
 
 void TextureButton::set_hover_texture_modulate(Color p_modulate) {
-	hover_modulate = p_modulate;
+	hover.modulate = p_modulate;
 	update();
 }
 
 void TextureButton::set_disabled_texture_modulate(Color p_modulate) {
-	disabled_modulate = p_modulate;
+	disabled.modulate = p_modulate;
 	update();
 }
 
 void TextureButton::set_focused_texture_modulate(Color p_modulate) {
-	focused_modulate = p_modulate;
+	focused.modulate = p_modulate;
 	update();
 }
 
 Color TextureButton::get_normal_texture_modulate() {
-	return normal_modulate;
+	return normal.modulate;
 }
 
 Color TextureButton::get_pressed_texture_modulate() {
-	return pressed_modulate;
+	return pressed.modulate;
 }
 
 Color TextureButton::get_hover_texture_modulate() {
-	return hover_modulate;
+	return hover.modulate;
 }
 
 Color TextureButton::get_disabled_texture_modulate() {
-	return disabled_modulate;
+	return disabled.modulate;
 }
 
 Color TextureButton::get_focused_texture_modulate() {
-	return focused_modulate;
+	return focused.modulate;
 }
 
 TextureButton::TextureButton() {
 	expand = false;
 	stretch_mode = STRETCH_SCALE;
 
-	normal_modulate = Color(1, 1, 1);
-	pressed_modulate = Color(1, 1, 1);
-	hover_modulate = Color(1, 1, 1);
-	disabled_modulate = Color(1, 1, 1);
-	focused_modulate = Color(1, 1, 1);
-	
+	normal.modulate = Color(1, 1, 1);
+	pressed.modulate = Color(1, 1, 1);
+	hover.modulate = Color(1, 1, 1);
+	disabled.modulate = Color(1, 1, 1);
+	focused.modulate = Color(1, 1, 1);
+
 	_texture_region = Rect2();
 	_position_rect = Rect2();
 	_tile = false;
