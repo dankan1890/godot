@@ -217,9 +217,9 @@ void SpriteFramesEditor::_sheet_preview_input(const Ref<InputEvent> &p_event) {
 			drag_delete = false;
 		} else {
 			// Mouse Wheel Event
-			if (mb->get_button_index() == BUTTON_WHEEL_UP && mb->get_control()) {
+			if (mb->get_button_index() == BUTTON_WHEEL_UP && mb->is_pressed() && mb->get_control()) {
 				_zoom(ZOOM_IN);
-			} else if (mb->get_button_index() == BUTTON_WHEEL_DOWN && mb->get_control()) {
+			} else if (mb->get_button_index() == BUTTON_WHEEL_DOWN && mb->is_pressed() && mb->get_control()) {
 				_zoom(ZOOM_OUT);
 			}
 		}
@@ -301,10 +301,10 @@ void SpriteFramesEditor::_zoom(int p_mode) {
 	float scale = split_sheet_preview->get_scale().x;
 	switch (p_mode) {
 		case ZOOM_OUT:
-			scale /= 1.2f;
+			scale -= 0.1f;
 			break;
 		case ZOOM_IN:
-			scale *= 1.2f;
+			scale += 0.1f;
 			break;
 		case ZOOM_FIT: {
 			Ref<StyleBox> sb = splite_sheet_scroll->get_stylebox("bg");
@@ -358,13 +358,14 @@ void SpriteFramesEditor::_prepare_sprite_sheet(const String &p_file) {
 		split_mode->select(SPLIT_GRID);
 		_sheet_mode_changed(SPLIT_GRID);
 		cache_map.clear();
+		texture_info->set_text(TTR("Texture size: ") + itos(texture->get_width()) + "x" + itos(texture->get_height()));
 	}
 
 	frames_selected.clear();
 	split_sheet_preview->set_scale(Vector2(1, 1));
 	split_panel->set_custom_minimum_size(texture->get_size());
 	split_sheet_preview->set_texture(texture);
-	split_sheet_dialog->popup_centered_ratio(0.65);
+	split_sheet_dialog->popup_centered_ratio();
 }
 
 void SpriteFramesEditor::_notification(int p_what) {
@@ -1193,10 +1194,13 @@ SpriteFramesEditor::SpriteFramesEditor() {
 	VBoxContainer *main_vb = memnew(VBoxContainer);
 	split_sheet_dialog->add_child(main_vb);
 
-	HBoxContainer *zoom_hb = memnew(HBoxContainer);
-	main_vb->add_child(zoom_hb);
-	zoom_hb->set_alignment(BoxContainer::ALIGN_END);
+	HBoxContainer *info_hb = memnew(HBoxContainer);
+	info_hb->set_alignment(BoxContainer::ALIGN_END);
+	texture_info = memnew(Label);
+	info_hb->add_child(texture_info);
 
+	HBoxContainer *zoom_hb = memnew(HBoxContainer);
+	zoom_hb->set_alignment(BoxContainer::ALIGN_END);
 	zoom_perc = memnew(Label);
 	zoom_perc->set_text("100%");
 	zoom_hb->add_child(zoom_perc);
@@ -1370,7 +1374,13 @@ SpriteFramesEditor::SpriteFramesEditor() {
 	split_panel->set_v_size_flags(SIZE_EXPAND_FILL);
 	splite_sheet_scroll->add_child(split_panel);
 
-	main_hb->add_child(splite_sheet_scroll);
+	VBoxContainer *vb_scroll = memnew(VBoxContainer);
+	vb_scroll->set_h_size_flags(SIZE_EXPAND_FILL);
+	vb_scroll->set_v_size_flags(SIZE_EXPAND_FILL);
+	vb_scroll->add_child(zoom_hb);
+	vb_scroll->add_child(splite_sheet_scroll);
+	vb_scroll->add_child(info_hb);
+	main_hb->add_child(vb_scroll);
 
 	file_split_sheet = memnew(EditorFileDialog);
 	file_split_sheet->set_title(TTR("Create Frames from Sprite Sheet"));

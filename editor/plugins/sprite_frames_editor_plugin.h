@@ -107,6 +107,7 @@ class SpriteFramesEditor : public HSplitContainer {
 	CheckBox *skip_empty;
 	Label *zoom_perc;
 	ToolButton *zoom[ZOOM_MAX];
+	Label *texture_info;
 
 	Map<RID, List<Rect2> > cache_map;
 	List<Rect2> frames_grid;
