@@ -249,11 +249,18 @@ void SpriteFramesEditor::_sheet_add_frames() {
 
 	undo_redo->create_action(TTR("Add Frame"));
 	int fc = frames->get_frame_count(edited_anim);
+	AtlasTexture *atlas_source = Object::cast_to<AtlasTexture>(*split_sheet_preview->get_texture());
+
 	for (List<Rect2>::Element *E = frames_selected.front(); E; E = E->next()) {
 		Ref<AtlasTexture> at;
 		at.instance();
 		at->set_atlas(split_sheet_preview->get_texture());
-		at->set_region(E->get());
+
+		if (atlas_source && atlas_source->get_atlas().is_valid()) {
+			at->set_region(atlas_source->get_region());
+		} else {
+			at->set_region(E->get());
+		}
 
 		undo_redo->add_do_method(frames, "add_frame", edited_anim, at, -1);
 		undo_redo->add_undo_method(frames, "remove_frame", edited_anim, fc);
