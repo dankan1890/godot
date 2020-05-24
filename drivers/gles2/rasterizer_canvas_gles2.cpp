@@ -1526,7 +1526,7 @@ void RasterizerCanvasGLES2::render_batches(Item::Command *const *p_commands, Ite
 										offset += to_draw * 2;
 									}
 								} else {
-									_draw_generic(GL_LINES, pline->lines.size(), pline->lines.ptr(), NULL, pline->line_colors.ptr(), pline->line_colors.size() == 1);
+									_draw_generic(GL_LINE_STRIP, pline->lines.size(), pline->lines.ptr(), NULL, pline->line_colors.ptr(), pline->line_colors.size() == 1);
 								}
 
 #ifdef GLES_OVER_GL
@@ -2285,7 +2285,7 @@ bool RasterizerCanvasGLES2::try_join_item(Item *p_ci, RenderItemState &r_ris, bo
 
 	// does the shader contain BUILTINs which should break the batching?
 	bdata.joined_item_batch_flags = 0;
-	if (r_ris.shader_cache && !unshaded) {
+	if (r_ris.shader_cache) {
 
 		unsigned int and_flags = r_ris.shader_cache->canvas_item.batch_flags & (RasterizerStorageGLES2::Shader::CanvasItem::PREVENT_COLOR_BAKING | RasterizerStorageGLES2::Shader::CanvasItem::PREVENT_VERTEX_BAKING);
 		if (and_flags) {
@@ -2333,7 +2333,7 @@ bool RasterizerCanvasGLES2::try_join_item(Item *p_ci, RenderItemState &r_ris, bo
 			int light_count = -1;
 			while (light) {
 				light_count++;
-				uint64_t light_bit = 1 << light_count;
+				uint64_t light_bit = 1ULL << light_count;
 
 				// note that as a cost of batching, the light culling will be less effective
 				if (p_ci->light_mask & light->item_mask && r_ris.item_group_z >= light->z_min && r_ris.item_group_z <= light->z_max) {
