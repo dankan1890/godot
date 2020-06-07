@@ -3121,6 +3121,15 @@ void GDScriptParser::_parse_block(BlockNode *p_block, bool p_static) {
 				IdentifierNode *id = alloc_node<IdentifierNode>();
 				id->name = tokenizer->get_token_identifier();
 
+				BlockNode *check_block = p_block;
+				while (check_block) {
+					if (check_block->variables.has(id->name)) {
+						_set_error("Variable \"" + String(id->name) + "\" already defined in the scope (at line " + itos(check_block->variables[id->name]->line) + ").");
+						return;
+					}
+					check_block = check_block->parent_block;
+				}
+
 				tokenizer->advance();
 
 				if (tokenizer->get_token() != GDScriptTokenizer::TK_OP_IN) {
@@ -7253,6 +7262,7 @@ GDScriptParser::DataType GDScriptParser::_reduce_function_call_type(const Operat
 
 			DataType original_type = base_type;
 			bool is_initializer = callee_name == "new";
+			bool is_get_script = p_call->arguments[0]->type == Node::TYPE_SELF && callee_name == "get_script";
 			bool is_static = false;
 			bool valid = false;
 
@@ -7269,6 +7279,14 @@ GDScriptParser::DataType GDScriptParser::_reduce_function_call_type(const Operat
 				return_type.is_meta_type = false;
 
 				valid = true; // There's always an initializer, we can assume this is true
+			}
+
+			if (is_get_script) {
+				// get_script() can be considered a meta-type.
+				return_type.kind = DataType::CLASS;
+				return_type.class_type = static_cast<ClassNode *>(head);
+				return_type.is_meta_type = true;
+				valid = true;
 			}
 
 			if (!valid) {
@@ -7357,8 +7375,8 @@ GDScriptParser::DataType GDScriptParser::_reduce_function_call_type(const Operat
 		} else if (!_is_type_compatible(arg_types[i - arg_diff], par_type, true)) {
 			// Supertypes are acceptable for dynamic compliance
 			if (!_is_type_compatible(par_type, arg_types[i - arg_diff])) {
-				_set_error("At \"" + callee_name + "()\" call, argument " + itos(i - arg_diff + 1) + ". Assigned type (" +
-								   par_type.to_string() + ") doesn't match the function argument's type (" +
+				_set_error("At \"" + callee_name + "()\" call, argument " + itos(i - arg_diff + 1) + ". The passed argument's type (" +
+								   par_type.to_string() + ") doesn't match the function's expected argument type (" +
 								   arg_types[i - arg_diff].to_string() + ").",
 						p_call->line);
 				return DataType();
