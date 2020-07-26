@@ -1997,17 +1997,16 @@ bool CanvasItemEditor::_gui_input_move(const Ref<InputEvent> &p_event) {
 			if ((b->get_alt() && !b->get_control()) || tool == TOOL_MOVE) {
 				List<CanvasItem *> selection = _get_edited_canvas_items();
 
-				// Remove not movable nodes
+				drag_selection.clear();
 				for (int i = 0; i < selection.size(); i++) {
-					if (!_is_node_movable(selection[i], true)) {
-						selection.erase(selection[i]);
+					if (_is_node_movable(selection[i], true)) {
+						drag_selection.push_back(selection[i]);
 					}
 				}
 
 				if (selection.size() > 0) {
 					drag_type = DRAG_MOVE;
 					drag_from = transform.affine_inverse().xform(b->get_position());
-					drag_selection = selection;
 					_save_canvas_item_state(drag_selection);
 				}
 				return true;
@@ -2297,16 +2296,15 @@ bool CanvasItemEditor::_gui_input_select(const Ref<InputEvent> &p_event) {
 					// Drag the node(s) if requested
 					List<CanvasItem *> selection2 = _get_edited_canvas_items();
 
-					// Remove not movable nodes
+					drag_selection.clear();
 					for (int i = 0; i < selection2.size(); i++) {
-						if (!_is_node_movable(selection2[i], true)) {
-							selection2.erase(selection2[i]);
+						if (_is_node_movable(selection2[i], true)) {
+							drag_selection.push_back(selection2[i]);
 						}
 					}
 
 					if (selection2.size() > 0) {
 						drag_type = DRAG_MOVE;
-						drag_selection = selection2;
 						drag_from = click;
 						_save_canvas_item_state(drag_selection);
 					}
@@ -3866,7 +3864,7 @@ void CanvasItemEditor::_notification(int p_what) {
 		rotate_button->set_icon(get_icon("ToolRotate", "EditorIcons"));
 		smart_snap_button->set_icon(get_icon("Snap", "EditorIcons"));
 		grid_snap_button->set_icon(get_icon("SnapGrid", "EditorIcons"));
-		snap_config_menu->set_icon(get_icon("GuiTabMenu", "EditorIcons"));
+		snap_config_menu->set_icon(get_icon("GuiTabMenuHl", "EditorIcons"));
 		skeleton_menu->set_icon(get_icon("Bone", "EditorIcons"));
 		override_camera_button->set_icon(get_icon("Camera2D", "EditorIcons"));
 		pan_button->set_icon(get_icon("ToolPan", "EditorIcons"));
@@ -3883,7 +3881,7 @@ void CanvasItemEditor::_notification(int p_what) {
 		key_scale_button->set_icon(get_icon("KeyScale", "EditorIcons"));
 		key_insert_button->set_icon(get_icon("Key", "EditorIcons"));
 		key_auto_insert_button->set_icon(get_icon("AutoKey", "EditorIcons"));
-		animation_menu->set_icon(get_icon("GuiTabMenu", "EditorIcons"));
+		animation_menu->set_icon(get_icon("GuiTabMenuHl", "EditorIcons"));
 
 		zoom_minus->set_icon(get_icon("ZoomLess", "EditorIcons"));
 		zoom_plus->set_icon(get_icon("ZoomMore", "EditorIcons"));
@@ -6284,7 +6282,7 @@ CanvasItemEditorViewport::CanvasItemEditorViewport(EditorNode *p_node, CanvasIte
 	selector->add_child(vbc);
 	vbc->set_h_size_flags(SIZE_EXPAND_FILL);
 	vbc->set_v_size_flags(SIZE_EXPAND_FILL);
-	vbc->set_custom_minimum_size(Size2(200, 260) * EDSCALE);
+	vbc->set_custom_minimum_size(Size2(240, 260) * EDSCALE);
 
 	btn_group = memnew(VBoxContainer);
 	vbc->add_child(btn_group);
