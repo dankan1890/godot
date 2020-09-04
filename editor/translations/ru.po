@@ -82,12 +82,16 @@
 # Calamander <Calamander@yandex.ru>, 2020.
 # Terminator <fresh-ter@yandex.com>, 2020.
 # Anatoly Kuznetsov <muffinnorth@yandex.ru>, 2020.
+# kyanukovich <ianu0001@algonquinlive.com>, 2020.
+# Ron788 <ustinov200511@gmail.com>, 2020.
+# Daniel <dan.ef1999@gmail.com>, 2020.
+# NeoLan Qu <it.bulla@mail.ru>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: Godot Engine editor\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2020-07-23 02:44+0000\n"
-"Last-Translator: Anatoly Kuznetsov <muffinnorth@yandex.ru>\n"
+"PO-Revision-Date: 2020-08-15 09:32+0000\n"
+"Last-Translator: Danil Alexeev <danil@alexeev.xyz>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/godot-engine/"
 "godot/ru/>\n"
 "Language: ru\n"
@@ -1213,6 +1217,16 @@ msgstr "Платиновые спонсоры"
 #: editor/editor_about.cpp
 msgid "Gold Sponsors"
 msgstr "Золотые спонсоры"
+
+#: editor/editor_about.cpp
+#, fuzzy
+msgid "Silver Sponsors"
+msgstr "Серебряные доноры"
+
+#: editor/editor_about.cpp
+#, fuzzy
+msgid "Bronze Sponsors"
+msgstr "Бронзовые доноры"
 
 #: editor/editor_about.cpp
 msgid "Mini Sponsors"
@@ -7419,7 +7433,7 @@ msgstr "Свободный вид, право"
 
 #: editor/plugins/spatial_editor_plugin.cpp
 msgid "Freelook Forward"
-msgstr "Freelook Forward"
+msgstr "Обзор вперёд"
 
 #: editor/plugins/spatial_editor_plugin.cpp
 msgid "Freelook Backwards"
@@ -8172,11 +8186,11 @@ msgstr "Удалить выбранную текстуру из TileSet."
 
 #: editor/plugins/tile_set_editor_plugin.cpp
 msgid "Create from Scene"
-msgstr "Создать из сцены"
+msgstr "Создать из Сцены"
 
 #: editor/plugins/tile_set_editor_plugin.cpp
 msgid "Merge from Scene"
-msgstr "Слияние из сцены"
+msgstr "Слияние из Сцены"
 
 #: editor/plugins/tile_set_editor_plugin.cpp
 msgid "New Single Tile"
@@ -8949,7 +8963,7 @@ msgstr "Возвращает обратный гиперболический т�
 #: editor/plugins/visual_shader_editor_plugin.cpp
 msgid ""
 "Finds the nearest integer that is greater than or equal to the parameter."
-msgstr "Вычисляет ближайшее целое число, большее или равное аргументу."
+msgstr "Находит ближайшее целое, которое больше или равно параметра."
 
 #: editor/plugins/visual_shader_editor_plugin.cpp
 msgid "Constrains a value to lie between two further values."
@@ -8957,11 +8971,11 @@ msgstr "Удерживает значение в пределах двух др�
 
 #: editor/plugins/visual_shader_editor_plugin.cpp
 msgid "Returns the cosine of the parameter."
-msgstr "Возвращает косинус аргумента."
+msgstr "Возвращает косинус параметра."
 
 #: editor/plugins/visual_shader_editor_plugin.cpp
 msgid "Returns the hyperbolic cosine of the parameter."
-msgstr "Возвращает гиперболический косинус аргумента."
+msgstr "Возвращает гиперболический косинус параметра."
 
 #: editor/plugins/visual_shader_editor_plugin.cpp
 msgid "Converts a quantity in radians to degrees."
@@ -8977,7 +8991,7 @@ msgstr "Экспонента с основанием 2."
 
 #: editor/plugins/visual_shader_editor_plugin.cpp
 msgid "Finds the nearest integer less than or equal to the parameter."
-msgstr "Вычисляет ближайшее целое, меньшее или равное аргументу."
+msgstr "Находит ближайшее целое, меньшее или равное аргументу."
 
 #: editor/plugins/visual_shader_editor_plugin.cpp
 msgid "Computes the fractional part of the argument."
@@ -8985,7 +8999,7 @@ msgstr "Вычисляет дробную часть аргумента."
 
 #: editor/plugins/visual_shader_editor_plugin.cpp
 msgid "Returns the inverse of the square root of the parameter."
-msgstr "Возвращает обратный корень из аргумента."
+msgstr "Возвращает обратный квадратный корень из аргумента."
 
 #: editor/plugins/visual_shader_editor_plugin.cpp
 msgid "Natural logarithm."
@@ -9030,11 +9044,11 @@ msgstr "1.0 / скаляр"
 
 #: editor/plugins/visual_shader_editor_plugin.cpp
 msgid "Finds the nearest integer to the parameter."
-msgstr "Вычисляет ближайшее целое число."
+msgstr "Находит ближайшее к параметру целое число."
 
 #: editor/plugins/visual_shader_editor_plugin.cpp
 msgid "Finds the nearest even integer to the parameter."
-msgstr "Вычисляет ближайшее чётное число."
+msgstr "Находит ближайшее чётное число к параметру."
 
 #: editor/plugins/visual_shader_editor_plugin.cpp
 msgid "Clamps the value between 0.0 and 1.0."
@@ -9578,7 +9592,7 @@ msgstr "Файл пакета"
 
 #: editor/project_export.cpp
 msgid "Features"
-msgstr "Свойства"
+msgstr "Возможности"
 
 #: editor/project_export.cpp
 msgid "Custom (comma-separated):"
@@ -10599,9 +10613,8 @@ msgid "Make node as Root"
 msgstr "Сделать узел корневым"
 
 #: editor/scene_tree_dock.cpp
-#, fuzzy
 msgid "Delete %d nodes and any children?"
-msgstr "Удалить узел «%s» и его дочерние элементы?"
+msgstr "Удалить узел «%d» и его дочерние элементы?"
 
 #: editor/scene_tree_dock.cpp
 msgid "Delete %d nodes?"
@@ -12300,6 +12313,9 @@ msgid ""
 "Polygon-based shapes are not meant be used nor edited directly through the "
 "CollisionShape2D node. Please use the CollisionPolygon2D node instead."
 msgstr ""
+"Полигональные фигуры не предназначены для использования или редактирования "
+"непосредственно через узел \"CollisionShape2D\". Пожалуйста, используйте "
+"вместо этого узел \"CollisionPolygon2D\" ."
 
 #: scene/2d/cpu_particles_2d.cpp
 msgid ""

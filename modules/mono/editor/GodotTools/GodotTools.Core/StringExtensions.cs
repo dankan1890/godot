@@ -14,10 +14,11 @@ namespace GodotTools.Core
             if (Path.DirectorySeparatorChar == '\\')
                 dir = dir.Replace("/", "\\") + "\\";
 
-            Uri fullPath = new Uri(Path.GetFullPath(path), UriKind.Absolute);
-            Uri relRoot = new Uri(Path.GetFullPath(dir), UriKind.Absolute);
+            var fullPath = new Uri(Path.GetFullPath(path), UriKind.Absolute);
+            var relRoot = new Uri(Path.GetFullPath(dir), UriKind.Absolute);
 
-            return relRoot.MakeRelativeUri(fullPath).ToString();
+            // MakeRelativeUri converts spaces to %20, hence why we need UnescapeDataString
+            return Uri.UnescapeDataString(relRoot.MakeRelativeUri(fullPath).ToString());
         }
 
         public static string NormalizePath(this string path)
@@ -34,26 +35,16 @@ namespace GodotTools.Core
             return rooted ? Path.DirectorySeparatorChar + path : path;
         }
 
-        private static readonly string driveRoot = Path.GetPathRoot(Environment.CurrentDirectory);
+        private static readonly string DriveRoot = Path.GetPathRoot(Environment.CurrentDirectory);
 
         public static bool IsAbsolutePath(this string path)
         {
             return path.StartsWith("/", StringComparison.Ordinal) ||
                    path.StartsWith("\\", StringComparison.Ordinal) ||
-                   path.StartsWith(driveRoot, StringComparison.Ordinal);
+                   path.StartsWith(DriveRoot, StringComparison.Ordinal);
         }
 
-        public static string CsvEscape(this string value, char delimiter = ',')
-        {
-            bool hasSpecialChar = value.IndexOfAny(new char[] { '\"', '\n', '\r', delimiter }) != -1;
-
-            if (hasSpecialChar)
-                return "\"" + value.Replace("\"", "\"\"") + "\"";
-
-            return value;
-        }
-
-        public static string ToSafeDirName(this string dirName, bool allowDirSeparator)
+        public static string ToSafeDirName(this string dirName, bool allowDirSeparator = false)
         {
             var invalidChars = new List<string> { ":", "*", "?", "\"", "<", ">", "|" };
 
