@@ -892,7 +892,7 @@
 			Size of the hash table used for the broad-phase 2D hash grid algorithm.
 		</member>
 		<member name="physics/2d/cell_size" type="int" setter="" getter="" default="128">
-			Cell size used for the broad-phase 2D hash grid algorithm.
+			Cell size used for the broad-phase 2D hash grid algorithm (in pixels).
 		</member>
 		<member name="physics/2d/default_angular_damp" type="float" setter="" getter="" default="1.0">
 			The default angular damp in 2D.
@@ -993,9 +993,11 @@
 		</member>
 		<member name="rendering/batching/options/use_batching" type="bool" setter="" getter="" default="true">
 			Turns batching on and off. Batching increases performance by reducing the amount of graphics API drawcalls.
+			[b]Note:[/b] Currently only effective when using the GLES2 renderer.
 		</member>
 		<member name="rendering/batching/options/use_batching_in_editor" type="bool" setter="" getter="" default="true">
 			Switches on batching within the editor.
+			[b]Note:[/b] Currently only effective when using the GLES2 renderer.
 		</member>
 		<member name="rendering/batching/parameters/batch_buffer_size" type="int" setter="" getter="" default="16384">
 			Size of buffer reserved for batched vertices. Larger size enables larger batches, but there are diminishing returns for the memory used. This should only have a minor effect on performance.
@@ -1203,7 +1205,7 @@
 			If [code]true[/code], the texture importer will import VRAM-compressed textures using the S3 Texture Compression algorithm. This algorithm is only supported on desktop platforms and consoles.
 		</member>
 		<member name="world/2d/cell_size" type="int" setter="" getter="" default="100">
-			Cell size used for the 2D hash grid that [VisibilityNotifier2D] uses.
+			Cell size used for the 2D hash grid that [VisibilityNotifier2D] uses (in pixels).
 		</member>
 	</members>
 	<constants>
