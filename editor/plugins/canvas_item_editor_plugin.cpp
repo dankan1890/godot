@@ -38,7 +38,7 @@
 #include "editor/editor_scale.h"
 #include "editor/editor_settings.h"
 #include "editor/plugins/animation_player_editor_plugin.h"
-#include "editor/plugins/canvas_item_arrange_panel.h"
+#include "editor/plugins/canvas_item_arrange_plugin.h"
 #include "editor/plugins/script_editor_plugin.h"
 #include "editor/script_editor_debugger.h"
 #include "scene/2d/light_2d.h"
