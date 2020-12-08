@@ -226,8 +226,15 @@ void editor_register_and_generate_icons(Ref<Theme> p_theme, bool p_dark_theme = 
 	// Generate icons.
 	if (!p_only_thumbs) {
 		for (int i = 0; i < editor_icons_count; i++) {
+			float icon_scale = EDSCALE;
+
+			// Always keep the DefaultProjectIcon at the default size
+			if (strcmp(editor_icons_names[i], "DefaultProjectIcon") == 0) {
+				icon_scale = 1.0f;
+			}
+
 			const int is_exception = exceptions.has(editor_icons_names[i]);
-			const Ref<ImageTexture> icon = editor_generate_icon(i, !is_exception);
+			const Ref<ImageTexture> icon = editor_generate_icon(i, !is_exception, icon_scale);
 
 			p_theme->set_icon(editor_icons_names[i], "EditorIcons", icon);
 		}
@@ -438,7 +445,8 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 
 	// Highlighted tabs and border width
 	Color tab_color = highlight_tabs ? base_color.linear_interpolate(font_color, contrast) : base_color;
-	const int border_width = CLAMP(border_size, 0, 3) * EDSCALE;
+	// Ensure borders are visible when using an editor scale below 100%.
+	const int border_width = CLAMP(border_size, 0, 3) * MAX(1, EDSCALE);
 
 	const int default_margin_size = 4;
 	const int margin_size_extra = default_margin_size + CLAMP(border_size, 0, 3);
