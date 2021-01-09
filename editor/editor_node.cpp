@@ -2289,8 +2289,7 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 			int scene_idx = (p_option == FILE_SAVE_SCENE) ? -1 : tab_closing;
 
 			Node *scene = editor_data.get_edited_scene_root(scene_idx);
-			if (scene && scene->get_filename() != "") {
-
+			if (scene && scene->get_filename() != "" && FileAccess::exists(scene->get_filename())) {
 				if (scene_idx != editor_data.get_edited_scene())
 					_save_scene_with_preview(scene->get_filename(), scene_idx);
 				else
@@ -2335,11 +2334,12 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 			}
 
 			if (scene->get_filename() != "") {
-				file->set_current_path(scene->get_filename());
+				String path = scene->get_filename();
+				file->set_current_path(path);
 				if (extensions.size()) {
-					String ext = scene->get_filename().get_extension().to_lower();
+					String ext = path.get_extension().to_lower();
 					if (extensions.find(ext) == NULL) {
-						file->set_current_path(scene->get_filename().replacen("." + ext, "." + extensions.front()->get()));
+						file->set_current_path(path.replacen("." + ext, "." + extensions.front()->get()));
 					}
 				}
 			} else {
@@ -2603,6 +2603,8 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 			}
 		} break;
 		case RUN_PROJECT_DATA_FOLDER: {
+			// ensure_user_data_dir() to prevent the edge case: "Open Project Data Folder" won't work after the project was renamed in ProjectSettingsEditor unless the project is saved
+			OS::get_singleton()->ensure_user_data_dir();
 			OS::get_singleton()->shell_open(String("file://") + OS::get_singleton()->get_user_data_dir());
 		} break;
 		case FILE_EXPLORE_ANDROID_BUILD_TEMPLATES: {
