@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2020 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2020 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -74,6 +74,9 @@ bool FileSystemDock::_create_tree(TreeItem *p_parent, EditorFileSystemDirectory 
 	subdirectory_item->set_metadata(0, lpath);
 	if (!p_select_in_favorites && (path == lpath || ((display_mode == DISPLAY_MODE_SPLIT) && path.get_base_dir() == lpath))) {
 		subdirectory_item->select(0);
+		// Keep select an item when re-created a tree
+		// To prevent crashing when nothing is selected.
+		subdirectory_item->set_as_cursor(0);
 	}
 
 	if (p_unfold_path && path.begins_with(lpath) && path != lpath) {
@@ -1290,10 +1293,16 @@ void FileSystemDock::_make_scene_confirm() {
 
 void FileSystemDock::_file_removed(String p_file) {
 	emit_signal("file_removed", p_file);
+
+	path = "res://";
+	current_path->set_text(path);
 }
 
 void FileSystemDock::_folder_removed(String p_folder) {
 	emit_signal("folder_removed", p_folder);
+
+	path = "res://";
+	current_path->set_text(path);
 }
 
 void FileSystemDock::_rename_operation_confirm() {
@@ -1348,6 +1357,9 @@ void FileSystemDock::_rename_operation_confirm() {
 
 	print_verbose("FileSystem: saving moved scenes.");
 	_save_scenes_after_move(file_renames);
+
+	path = new_path;
+	current_path->set_text(path);
 }
 
 void FileSystemDock::_duplicate_operation_confirm() {
@@ -1456,6 +1468,9 @@ void FileSystemDock::_move_operation_confirm(const String &p_to_path, bool overw
 
 		print_verbose("FileSystem: saving moved scenes.");
 		_save_scenes_after_move(file_renames);
+
+		path = "res://";
+		current_path->set_text(path);
 	}
 }
 

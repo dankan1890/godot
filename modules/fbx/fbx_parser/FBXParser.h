@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2020 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2020 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -191,7 +191,7 @@ public:
 	Parser(const TokenList &tokens, bool is_binary);
 	~Parser();
 
-	const ScopePtr GetRootScope() const {
+	ScopePtr GetRootScope() const {
 		return root;
 	}
 
@@ -247,11 +247,11 @@ void ParseVectorDataArray(std::vector<int64_t> &out, const ElementPtr el);
 bool HasElement(const ScopePtr sc, const std::string &index);
 
 // extract a required element from a scope, abort if the element cannot be found
-const ElementPtr GetRequiredElement(const ScopePtr sc, const std::string &index, const ElementPtr element = nullptr);
-const ScopePtr GetRequiredScope(const ElementPtr el); // New in 2020. (less likely to destroy application)
-const ElementPtr GetOptionalElement(const ScopePtr sc, const std::string &index, const ElementPtr element = nullptr);
+ElementPtr GetRequiredElement(const ScopePtr sc, const std::string &index, const ElementPtr element = nullptr);
+ScopePtr GetRequiredScope(const ElementPtr el); // New in 2020. (less likely to destroy application)
+ElementPtr GetOptionalElement(const ScopePtr sc, const std::string &index, const ElementPtr element = nullptr);
 // extract required compound scope
-const ScopePtr GetRequiredScope(const ElementPtr el);
+ScopePtr GetRequiredScope(const ElementPtr el);
 // get token at a particular index
 TokenPtr GetRequiredToken(const ElementPtr el, unsigned int index);
 

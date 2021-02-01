@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2020 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2020 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -47,7 +47,6 @@ class WebXRInterfaceJS : public WebXRInterface {
 private:
 	bool initialized;
 
-	// @todo Should these really use enums instead of strings?
 	String session_mode;
 	String required_features;
 	String optional_features;
@@ -55,6 +54,7 @@ private:
 	String reference_space_type;
 
 	bool controllers_state[2];
+	Size2 render_targetsize;
 
 	Transform _js_matrix_to_transform(float *p_js_matrix);
 	void _update_tracker(int p_controller_id);

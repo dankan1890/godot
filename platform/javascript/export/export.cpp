@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2020 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2020 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -135,6 +135,7 @@ public:
 		s += "Access-Control-Allow-Origin: *\r\n";
 		s += "Cross-Origin-Opener-Policy: same-origin\r\n";
 		s += "Cross-Origin-Embedder-Policy: require-corp\r\n";
+		s += "Cache-Control: no-store, max-age=0\r\n";
 		s += "\r\n";
 		CharString cs = s.utf8();
 		Error err = connection->put_data((const uint8_t *)cs.get_data(), cs.size() - 1);

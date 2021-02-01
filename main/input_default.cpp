@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2020 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2020 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -783,10 +783,10 @@ void InputDefault::joy_axis(int p_device, int p_axis, const JoyAxis &p_value) {
 		jx.min = p_value.min;
 		jx.value = p_value.value < 0.5 ? 0.6 : 0.4;
 		joy_axis(p_device, p_axis, jx);
-	} else if (ABS(last) > 0.5 && last * p_value.value < 0) {
+	} else if (ABS(last) > 0.5 && last * p_value.value <= 0) {
 		JoyAxis jx;
 		jx.min = p_value.min;
-		jx.value = p_value.value < 0 ? 0.1 : -0.1;
+		jx.value = last > 0 ? 0.1 : -0.1;
 		joy_axis(p_device, p_axis, jx);
 	}
 

@@ -5,8 +5,8 @@
 /*                           GODOT ENGINE                                */
 /*                      https://godotengine.org                          */
 /*************************************************************************/
-/* Copyright (c) 2007-2020 Juan Linietsky, Ariel Manzur.                 */
-/* Copyright (c) 2014-2020 Godot Engine contributors (cf. AUTHORS.md).   */
+/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -2109,7 +2109,10 @@ void EditorNode::_run(bool p_current, const String &p_custom) {
 
 		if (scene->get_filename() == "") {
 			current_option = -1;
-			_menu_option_confirm(FILE_SAVE_BEFORE_RUN, false);
+			_menu_option(FILE_SAVE_AS_SCENE);
+			// Set the option to save and run so when the dialog is accepted, the scene runs.
+			current_option = FILE_SAVE_AND_RUN;
+			file->set_title(TTR("Save scene before running..."));
 			return;
 		}
 
@@ -2264,6 +2267,7 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 
 			if (!p_confirmed) {
 				tab_closing = p_option == FILE_CLOSE ? editor_data.get_edited_scene() : _next_unsaved_scene(false);
+				_scene_tab_changed(tab_closing);
 
 				if (unsaved_cache || p_option == FILE_CLOSE_ALL_AND_QUIT || p_option == FILE_CLOSE_ALL_AND_RUN_PROJECT_MANAGER) {
 					String scene_filename = editor_data.get_edited_scene_root(tab_closing)->get_filename();
@@ -2289,7 +2293,7 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 			int scene_idx = (p_option == FILE_SAVE_SCENE) ? -1 : tab_closing;
 
 			Node *scene = editor_data.get_edited_scene_root(scene_idx);
-			if (scene && scene->get_filename() != "" && FileAccess::exists(scene->get_filename())) {
+			if (scene && scene->get_filename() != "") {
 				if (scene_idx != editor_data.get_edited_scene())
 					_save_scene_with_preview(scene->get_filename(), scene_idx);
 				else
@@ -2359,18 +2363,6 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 		case FILE_SAVE_ALL_SCENES: {
 
 			_save_all_scenes();
-		} break;
-		case FILE_SAVE_BEFORE_RUN: {
-			if (!p_confirmed) {
-				confirmation->get_cancel()->set_text(TTR("No"));
-				confirmation->get_ok()->set_text(TTR("Yes"));
-				confirmation->set_text(TTR("This scene has never been saved. Save before running?"));
-				confirmation->popup_centered_minsize();
-				break;
-			}
-
-			_menu_option(FILE_SAVE_AS_SCENE);
-			_menu_option_confirm(FILE_SAVE_AND_RUN, false);
 		} break;
 
 		case FILE_EXPORT_PROJECT: {
@@ -2920,6 +2912,10 @@ void EditorNode::_discard_changes(const String &p_str) {
 			_update_scene_tabs();
 
 			if (current_option == FILE_CLOSE_ALL_AND_QUIT || current_option == FILE_CLOSE_ALL_AND_RUN_PROJECT_MANAGER) {
+				// If restore tabs is enabled, reopen the scene that has just been closed, so it's remembered properly.
+				if (bool(EDITOR_GET("interface/scene_tabs/restore_scenes_on_load"))) {
+					_menu_option_confirm(FILE_OPEN_PREV, true);
+				}
 				if (_next_unsaved_scene(false) == -1) {
 					current_option = current_option == FILE_CLOSE_ALL_AND_QUIT ? FILE_QUIT : RUN_PROJECT_MANAGER;
 					_discard_changes();
@@ -4794,8 +4790,8 @@ void EditorNode::_scene_tab_closed(int p_tab, int option) {
 	}
 
 	bool unsaved = (p_tab == editor_data.get_edited_scene()) ?
-						   saved_version != editor_data.get_undo_redo().get_version() :
-						   editor_data.get_scene_version(p_tab) != 0;
+							 saved_version != editor_data.get_undo_redo().get_version() :
+							 editor_data.get_scene_version(p_tab) != 0;
 	if (unsaved) {
 		save_confirmation->get_ok()->set_text(TTR("Save & Close"));
 		save_confirmation->set_text(vformat(TTR("Save changes to '%s' before closing?"), scene->get_filename() != "" ? scene->get_filename() : "unsaved scene"));
@@ -5780,6 +5776,8 @@ EditorNode::EditorNode() {
 		switch (display_scale) {
 			case 0: {
 				// Try applying a suitable display scale automatically.
+				// The code below is adapted in `editor/editor_settings.cpp` and `editor/project_manager.cpp`.
+				// Make sure to update those when modifying the code below.
 #ifdef OSX_ENABLED
 				editor_set_scale(OS::get_singleton()->get_screen_max_scale());
 #else
