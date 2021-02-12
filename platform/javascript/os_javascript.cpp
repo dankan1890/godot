@@ -129,7 +129,7 @@ EM_BOOL OS_JavaScript::fullscreen_change_callback(int p_event_type, const Emscri
 	OS_JavaScript *os = get_singleton();
 	// Empty ID is canvas.
 	String target_id = String::utf8(p_event->id);
-	if (target_id.empty() || target_id == String::utf8(os->canvas_id)) {
+	if (target_id.empty() || target_id == String::utf8(&(os->canvas_id[1]))) {
 		// This event property is the only reliable data on
 		// browser fullscreen state.
 		os->video_mode.fullscreen = p_event->isFullscreen;
@@ -159,7 +159,8 @@ Size2 OS_JavaScript::get_screen_size(int p_screen) const {
 	EmscriptenFullscreenChangeEvent ev;
 	EMSCRIPTEN_RESULT result = emscripten_get_fullscreen_status(&ev);
 	ERR_FAIL_COND_V(result != EMSCRIPTEN_RESULT_SUCCESS, Size2());
-	return Size2(ev.screenWidth, ev.screenHeight);
+	double scale = godot_js_display_pixel_ratio_get();
+	return Size2(ev.screenWidth * scale, ev.screenHeight * scale);
 }
 
 void OS_JavaScript::set_window_size(const Size2 p_size) {
@@ -589,7 +590,7 @@ OS::MouseMode OS_JavaScript::get_mouse_mode() const {
 
 	EmscriptenPointerlockChangeEvent ev;
 	emscripten_get_pointerlock_status(&ev);
-	return (ev.isActive && String::utf8(ev.id) == String::utf8(canvas_id)) ? MOUSE_MODE_CAPTURED : MOUSE_MODE_VISIBLE;
+	return (ev.isActive && String::utf8(ev.id) == String::utf8(&canvas_id[1])) ? MOUSE_MODE_CAPTURED : MOUSE_MODE_VISIBLE;
 }
 
 // Wheel
@@ -814,6 +815,7 @@ void OS_JavaScript::initialize_core() {
 
 Error OS_JavaScript::initialize(const VideoMode &p_desired, int p_video_driver, int p_audio_driver) {
 
+	godot_js_display_setup_canvas(); // Handle contextmenu, webglcontextlost
 	swap_ok_cancel = godot_js_display_is_swap_ok_cancel() == 1;
 
 	EmscriptenWebGLContextAttributes attributes;
@@ -1011,6 +1013,18 @@ bool OS_JavaScript::main_loop_iterate() {
 	}
 
 	return Main::iteration();
+}
+
+int OS_JavaScript::get_screen_dpi(int p_screen) const {
+	return godot_js_display_screen_dpi_get();
+}
+
+float OS_JavaScript::get_screen_scale(int p_screen) const {
+	return godot_js_display_pixel_ratio_get();
+}
+
+float OS_JavaScript::get_screen_max_scale() const {
+	return get_screen_scale();
 }
 
 void OS_JavaScript::delete_main_loop() {
